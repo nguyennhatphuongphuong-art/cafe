@@ -23,11 +23,18 @@ button{font:inherit;border:0;cursor:pointer}
 @keyframes float{50%{transform:translateY(-2px)}}
 #menu{position:absolute;left:9px;top:38%;width:29%;height:43%;z-index:8;background:rgba(45,25,14,.96);border:2px solid #87552d;border-radius:10px;padding:10px 7px;overflow:auto}
 #menu h2{font-size:20px;text-align:center;margin:0 0 5px}.cat{color:#ffd66e;font-weight:900;border-top:1px solid #7a4d2b;padding-top:5px;margin-top:4px}.item{font-size:10px;padding:3px 2px}
-#ingredients{position:absolute;left:31%;right:2%;top:46%;height:28%;z-index:8;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;align-content:start}
+#ingredients{display:none}
 .ingredient{background:rgba(61,39,24,.96);border:2px solid #8a5a34;border-radius:9px;color:#fff;padding:3px 2px;min-width:0;box-shadow:0 2px 0 #27150c;transition:.12s}
 .ingredient:active,.ingredient.selected{transform:scale(.96);outline:3px solid #f5c34d}
 .jar{height:38px;display:grid;place-items:center;font-size:24px;background:linear-gradient(#ffffff22,#00000022);border-radius:6px}
 .lbl{font-size:8px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+#hotspots{position:absolute;inset:0;z-index:8;pointer-events:none}
+.hotspot{position:absolute;display:block;pointer-events:auto;background:transparent;border:0;border-radius:10px;padding:0;outline:none}
+.hotspot:active{background:rgba(255,215,90,.10);box-shadow:inset 0 0 0 2px rgba(255,215,90,.35)}
+.hotspot.pulse{animation:hotpulse .22s ease-out}
+@keyframes hotpulse{50%{box-shadow:inset 0 0 0 3px rgba(255,210,75,.65)}}
+
 #board{position:absolute;left:31%;right:15%;bottom:9%;height:19%;z-index:9;border:3px solid #8a572e;border-radius:12px;background:linear-gradient(#a86632,#7a431f);box-shadow:0 5px 0 #32190d;display:flex;align-items:center;justify-content:center}
 #boardInner{position:relative;width:86%;height:82%;background:#c48648;border:3px solid #5a3018;border-radius:9px;box-shadow:inset 0 3px 0 #e4a766}
 #cup{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);width:70px;height:90px;border:4px solid #eaf4ff;border-radius:9px 9px 18px 18px;background:rgba(255,255,255,.12);display:none;z-index:3;overflow:hidden}
@@ -71,14 +78,33 @@ button{font:inherit;border:0;cursor:pointer}
 
   <section id="ingredients"></section>
 
-  <section id="board">
+  
+<section id="hotspots" aria-label="Điểm chạm nguyên liệu">
+  <button class="hotspot" data-id="cup" style="left:31%;top:79%;width:14%;height:8%" aria-label="Ly"></button>
+  <button class="hotspot" data-id="coffee" style="left:32%;top:48%;width:11%;height:9%" aria-label="Cà phê"></button>
+  <button class="hotspot" data-id="condensed" style="left:45%;top:48%;width:11%;height:9%" aria-label="Sữa đặc"></button>
+  <button class="hotspot" data-id="fresh" style="left:58%;top:48%;width:11%;height:9%" aria-label="Sữa tươi"></button>
+  <button class="hotspot" data-id="oolong" style="left:71%;top:48%;width:11%;height:9%" aria-label="Trà ô long"></button>
+  <button class="hotspot" data-id="matcha" style="left:84%;top:48%;width:11%;height:9%" aria-label="Matcha"></button>
+  <button class="hotspot" data-id="lycheeTea" style="left:32%;top:57%;width:11%;height:9%" aria-label="Trà vải"></button>
+  <button class="hotspot" data-id="sugar" style="left:45%;top:57%;width:11%;height:9%" aria-label="Đường"></button>
+  <button class="hotspot" data-id="ice" style="left:58%;top:57%;width:11%;height:9%" aria-label="Đá"></button>
+  <button class="hotspot" data-id="orange" style="left:71%;top:57%;width:11%;height:9%" aria-label="Cam"></button>
+  <button class="hotspot" data-id="pineapple" style="left:84%;top:57%;width:11%;height:9%" aria-label="Dứa"></button>
+  <button class="hotspot" data-id="lemon" style="left:32%;top:66%;width:11%;height:8%" aria-label="Chanh"></button>
+  <button class="hotspot" data-id="boba" style="left:45%;top:66%;width:11%;height:8%" aria-label="Trân châu"></button>
+  <button class="hotspot" data-id="coconutJelly" style="left:58%;top:66%;width:11%;height:8%" aria-label="Thạch dừa"></button>
+  <button class="hotspot" data-id="fruitJelly" style="left:71%;top:66%;width:11%;height:8%" aria-label="Thạch trái cây"></button>
+</section>
+
+<section id="board">
     <div id="boardInner">
-      <div id="recipe">Chọn ly → chọn nguyên liệu → nguyên liệu sẽ thật sự đi vào ly</div>
+      <div id="recipe">Chạm trực tiếp LY và nguyên liệu trên quầy</div>
       <div id="cup" aria-label="Ly đang pha"><div id="cupLiquid"></div><div id="cupLabel"></div></div>
     </div>
   </section>
 
-  <div id="status">Chạm LY trong kho nguyên liệu để đặt ly lên thớt.</div>
+  <div id="status">Chạm trực tiếp vào LY trên quầy để đặt lên thớt.</div>
   <div id="actions"><button class="action" id="reset" type="button">↺ Làm lại</button><button class="action" id="serve" type="button">Giao khách</button></div>
   <div class="toast" id="toast"></div>
 </main>
@@ -111,15 +137,7 @@ const recipes={
   'Trà vải':{need:['lycheeTea','sugar','ice'],price:15000}
 };
 
-function renderIngredients(){
-  ingredientsEl.innerHTML='';
-  ingredients.forEach(([icon,name,id])=>{
-    const b=document.createElement('button'); b.type='button'; b.className='ingredient'; b.dataset.id=id;
-    b.innerHTML=`<div class="jar">${icon}</div><div class="lbl">${name}</div>`;
-    b.addEventListener('click',()=>useIngredient(id,name));
-    ingredientsEl.appendChild(b);
-  });
-}
+function renderIngredients(){}
 function msg(t){toast.textContent=t;toast.style.display='block';clearTimeout(msg.t);msg.t=setTimeout(()=>toast.style.display='none',1100)}
 function useIngredient(id,name){
   if(id==='cup'){placeCup();return}
@@ -134,13 +152,13 @@ function useIngredient(id,name){
   updateProduct();
 }
 function placeCup(){
-  state={cup:true,items:[],product:''}; cup.classList.add('show'); liquid.style.height='0'; cupLabel.textContent='LY'; recipe.textContent='Chọn nguyên liệu cho ly này'; statusEl.textContent='Ly đã đặt lên thớt. Bây giờ chọn nguyên liệu.';
+  state={cup:true,items:[],product:''}; cup.classList.add('show'); liquid.style.height='0'; cupLabel.textContent='LY'; recipe.textContent='Chọn nguyên liệu cho ly này'; statusEl.textContent='Ly đã đặt lên thớt. Chạm nguyên liệu trực tiếp trên quầy.';
 }
 function updateProduct(){
   const exact=Object.entries(recipes).find(([name,r])=>r.need.length===state.items.length && r.need.every(x=>state.items.includes(x)));
   if(exact){state.product=exact[0];cupLabel.textContent=exact[0];statusEl.textContent=`${exact[0]} hoàn thành — ${exact[1].price/1000}k`;}
 }
-document.querySelector('#reset').addEventListener('click',()=>{state={cup:false,items:[],product:''};cup.classList.remove('show');recipe.textContent='Chọn LY → chọn nguyên liệu';liquid.style.height='0';cupLabel.textContent='';statusEl.textContent='Chạm LY trong kho nguyên liệu để đặt ly lên thớt.'});
+document.querySelector('#reset').addEventListener('click',()=>{state={cup:false,items:[],product:''};cup.classList.remove('show');recipe.textContent='Chọn LY → chọn nguyên liệu';liquid.style.height='0';cupLabel.textContent='';statusEl.textContent='Chạm trực tiếp vào LY trên quầy để đặt lên thớt.'});
 document.querySelector('#serve').addEventListener('click',()=>{
   if(!state.cup){msg('Chưa có ly!');return}
   if(!state.product){msg('Công thức chưa hoàn thành!');return}
@@ -150,7 +168,24 @@ document.querySelector('#serve').addEventListener('click',()=>{
   msg('Đã giao '+state.product+' cho khách!');
   document.querySelector('#reset').click();
 });
-renderIngredients();
+
+const names={
+  cup:'Ly',coffee:'Cà phê',condensed:'Sữa đặc',fresh:'Sữa tươi',
+  oolong:'Trà ô long',matcha:'Matcha',lycheeTea:'Trà vải',sugar:'Đường',
+  ice:'Đá',orange:'Cam',pineapple:'Dứa',lemon:'Chanh',boba:'Trân châu',
+  coconutJelly:'Thạch dừa',fruitJelly:'Thạch trái cây'
+};
+document.querySelectorAll('.hotspot').forEach(h=>{
+  h.addEventListener('click',()=>{
+    h.classList.remove('pulse');
+    void h.offsetWidth;
+    h.classList.add('pulse');
+    const id=h.dataset.id;
+    if(id==='cup'){ placeCup(); return; }
+    useIngredient(id,names[id]||id);
+  });
+});
+
 </script>
 </body>
 </html>
