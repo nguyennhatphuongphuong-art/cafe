@@ -194,20 +194,27 @@ function updatePatience(){
 }
 setInterval(updatePatience,1000);
 function renderCustomers(){const root=document.querySelector('#customers');root.innerHTML='';customers.forEach((c,i)=>{const d=document.createElement('div');d.className='customer c'+i;d.innerHTML=`<div class="bubble"><span class="drink">${c.order.icon}</span>${c.order.name}<br><small>Nhé ~</small></div><img src="${NPCS['n'+c.img]}"><div class="mood"><span style="width:${c.patience}%"></span></div>`;root.appendChild(d)});current=customers[0]?.order||null;updateFormula();}
+const INGREDIENT_CANON={
+  coffee:'coffee', coffeeBean:'coffee',
+  sugar:'sugar',
+  ice:'ice', đá:'ice',
+  condensed:'condensed', milkCondensed:'condensed',
+  fresh:'fresh', freshMilk:'fresh',
+  milkTea:'milkTea', milktea:'milkTea', tea:'milkTea', trà:'milkTea', 'trà sữa':'milkTea',
+  oolong:'oolong', oolongTea:'oolong', blackTea:'oolong', 'trà ô long':'oolong',
+  matcha:'matcha',
+  orange:'orange', cam:'orange',
+  pineapple:'pineapple', dứa:'pineapple',
+  lemon:'lemon', chanh:'lemon',
+  lycheeTea:'lycheeTea', 'trà vải':'lycheeTea',
+  boba:'boba', pearl:'boba', 'trân châu':'boba', 'trân châu đen':'boba',
+  coconut:'coconut', 'thạch dừa':'coconut',
+  fruitJelly:'fruitJelly', 'thạch trái cây':'fruitJelly',
+  TOPPING:'TOPPING', topping:'TOPPING'
+};
 function normalizeIngredient(id){
-  const aliases={
-    tea:'milkTea',
-    milktea:'milkTea',
-    'trà sữa':'milkTea',
-    blackTea:'oolong',
-    oolongTea:'oolong',
-    'trà ô long':'oolong',
-    pearl:'boba',
-    'trân châu':'boba',
-    topping:'TOPPING'
-  };
-  const key=String(id);
-  return aliases[key]||aliases[key.toLowerCase()]||key;
+  const raw=String(id??'').trim();
+  return INGREDIENT_CANON[raw] || INGREDIENT_CANON[raw.toLowerCase()] || raw;
 }
 function canonicalIngredients(list){
   return (Array.isArray(list)?list:[]).map(normalizeIngredient).sort().join('|');
@@ -219,6 +226,8 @@ function sameIngredientMultiset(a,b){
 function recipeMatchesAgainst(recipe,chosen){
   if(!recipe||!Array.isArray(chosen)) return false;
   const selected=chosen.map(normalizeIngredient);
+  // No duplicate ingredient is ever valid.
+  if(new Set(selected).size!==selected.length) return false;
   if(recipe.name==='Trà sữa ô long'){
     const fixed=selected.filter(x=>!TOPPINGS.includes(x));
     const topping=selected.filter(x=>TOPPINGS.includes(x));
@@ -285,7 +294,9 @@ document.querySelector('#cupHit').onclick=placeCup;
 ['coffee','tea','oolong','milkTea','matcha','lycheeTea','condensed','fresh','sugar','orange','pineapple','lemon','ice','boba','coconut','fruitJelly'].forEach(id=>{
   const el=document.querySelector('#'+id);
   if(!el) return;
-  el.addEventListener('pointerup',e=>{e.preventDefault(); id==='tea'?toast('Chọn loại trà cụ thể.'):addItem(id);},{passive:false});
+  // Every visible ingredient button maps to one canonical ingredient ID.
+  el.dataset.ingredient=normalizeIngredient(id);
+  el.addEventListener('pointerup',e=>{e.preventDefault(); addItem(el.dataset.ingredient);},{passive:false});
 });
 document.querySelector('#pay').onclick=serve;document.querySelector('#reset').onclick=()=>{resetCup();toast('Đã làm lại.')};
 const phoneModal=document.querySelector('#phoneModal');
@@ -364,6 +375,27 @@ window.__recipeSelfTestAll=()=>{
  }
  return out;
 };
+
+window.__recipeValidation={run(){
+  const originalCurrent=current, originalItems=[...items];
+  const failures=[];
+  const perms=(arr)=>{
+    const out=[]; const a=[...arr];
+    const go=(k)=>{if(k===a.length){out.push([...a]);return;} for(let i=k;i<a.length;i++){[a[k],a[i]]=[a[i],a[k]];go(k+1);[a[k],a[i]]=[a[i],a[k]];}};
+    go(0); return out;
+  };
+  for(const r of recipes){
+    const variants=r.name==='Trà sữa ô long'?TOPPINGS.map(t=>['milkTea','oolong','ice',t]):[r.need];
+    for(const v of variants){
+      for(const chosen of perms(v)){
+        if(!recipeMatchesExact(r.name,chosen)) failures.push({recipe:r.name,chosen});
+      }
+    }
+  }
+  current=originalCurrent; items=originalItems;
+  return {pass:failures.length===0,failures};
+}};
+
 
 try{const saved=localStorage.getItem("quanCaPheEconomyV3");if(saved)Object.assign(ECON,JSON.parse(saved));}catch(e){}
 setInterval(()=>{try{localStorage.setItem("quanCaPheEconomyV3",JSON.stringify(ECON));}catch(e){}},2000);
