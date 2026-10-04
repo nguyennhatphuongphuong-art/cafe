@@ -23,31 +23,22 @@ body{display:flex;justify-content:center;min-height:100vh;font-family:system-ui,
   display:block;
 }
 
-#npcLayer{position:absolute;left:9.5%;right:8.5%;top:28.7%;height:14.0%;z-index:20;display:block;pointer-events:none;overflow:visible}
-.npc{position:absolute;bottom:0;width:15.5%;height:100%;display:flex;justify-content:center;align-items:flex-end;overflow:visible;box-sizing:border-box}
+#npcLayer{position:absolute;left:9.5%;right:8.5%;top:28.7%;height:14.0%;z-index:30;pointer-events:none}
+.npc{position:absolute;bottom:0;width:17%;height:100%;display:flex;justify-content:center;align-items:flex-end;overflow:visible;box-sizing:border-box}
 .npc img{height:100%;width:auto;max-width:100%;object-fit:contain;object-position:center bottom;display:block;filter:drop-shadow(0 3px 3px #0005)}
-.bubble{
-position:absolute;top:-18%;left:50%;transform:translateX(-50%);
-width:105%;min-height:26px;padding:4px 5px;
-background:#fff8e7;color:#2b1a10;border:2px solid #754522;
-border-radius:9px;text-align:center;font-size:7px;line-height:1.08;
-font-weight:950;box-shadow:0 2px 0 #3d2110;z-index:5;
-}
-.bubble:after{
-content:"";position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
-border:4px solid transparent;border-top-color:#754522
-}
+.bubble{position:absolute;top:-19%;left:50%;transform:translateX(-50%);width:108%;min-height:29px;padding:5px 6px;background:#fff8e7;color:#2b1a10;border:2px solid #754522;border-radius:10px;text-align:center;font-size:7.2px;line-height:1.08;font-weight:950;box-shadow:0 2px 0 #3d2110;z-index:50;box-sizing:border-box}
+.bubble:after{content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#754522}
 
 #menuPriceLayer{display:none!important;
 position:absolute;z-index:65;left:15.7%;top:37.3%;width:4.0%;height:38%;
 pointer-events:none;color:#f7d66b;font-size:7.8px;font-weight:1000;text-align:right;line-height:1
 }
-.menu-price{position:absolute;right:0;white-space:nowrap;text-shadow:0 1px 1px #2a160c}
+
 
 .hot{position:absolute;z-index:50;border:0;background:transparent;padding:0;touch-action:manipulation}
 .hot:active{background:rgba(255,211,70,.12);border-radius:10px;box-shadow:inset 0 0 0 2px rgba(255,211,70,.35)}
 #phoneHot{left:64%;top:4%;width:8%;height:8%}
-#cupHot{left:3.0%;top:78.0%;width:15.5%;height:10.5%;}
+#cupHot{position:absolute;left:3.0%;top:78.0%;width:15.5%;height:10.5%;z-index:70;cursor:pointer;background:transparent}
 #coffeeHot{left:20%;top:43%;width:10%;height:9%}#teaHot{left:31%;top:43%;width:10%;height:9%}
 #oolongHot{left:43%;top:43%;width:10%;height:9%}#milkTeaHot{left:54%;top:43%;width:10%;height:9%}
 #matchaHot{left:65%;top:43%;width:10%;height:9%}#lycheeHot{left:76%;top:43%;width:10%;height:9%}
@@ -57,8 +48,7 @@ pointer-events:none;color:#f7d66b;font-size:7.8px;font-weight:1000;text-align:ri
 #iceHot{left:87%;top:55%;width:7%;height:8%}#bobaHot{left:21%;top:65%;width:12%;height:8%}
 #coconutHot{left:36%;top:65%;width:12%;height:8%}#fruitHot{left:51%;top:65%;width:12%;height:8%}
 #trashHot{left:69%;top:79%;width:18%;height:12%}
-#drink{
-position:absolute;z-index:80;left:41.0%;top:>79.5%;width:>18%;height:>15.5%;display:none;overflow:visible;pointer-events:none}
+#drink{position:absolute;left:42%;top:80.0%;width:16%;height:14.5%;z-index:65;display:none;pointer-events:none;object-fit:contain;object-position:center bottom}
 #drink img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:3}
 #drinkLiquid{
 position:absolute;left:18%;right:18%;bottom:8%;height:0;
@@ -68,12 +58,7 @@ clip-path:polygon(0 0,100% 0,91% 100%,9% 100%);
 box-shadow:inset 0 2px 3px #ffffff55
 }
 #drinkLabel{display:none}
-#recipeBubble{
-position:absolute;z-index:100;left:34%;right:34%;top:71.2%;min-height:9%;
-background:#fff8e7;color:#2d1a10;border:2px solid #754522;border-radius:11px;
-padding:5px 7px;text-align:center;font-size:8px;font-weight:950;display:none;
-box-shadow:0 2px 0 #3b2112;overflow:hidden
-}
+#recipeBubble{position:absolute;z-index:62;left:25%;right:25%;top:75.0%;background:#fff8e7;color:#2d1a10;border:2px solid #754522;border-radius:10px;padding:6px 8px;text-align:center;font-size:8px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none;box-shadow:0 2px 0 #3b2112}
 #recipeBubble .formula-title{font-size:8px;font-weight:1000;line-height:1.05}
 #recipeBubble .formula-icons{display:flex;justify-content:center;align-items:center;gap:3px;margin-top:3px}
 #recipeBubble .ficon{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center}
@@ -175,7 +160,7 @@ function setRecipe(){
  $("#recipeBubble").style.display="block";
 }
 function updateReady(){const ok=!!(cup.product && queue[0] && cup.product===queue[0][3]);$("#game").classList.toggle("ready",ok);$("#serveBtn").setAttribute("aria-disabled",ok?"false":"true");return ok}
-function placeCup(){cup={active:true,items:[],product:null};updateReady();$("#drink").style.display="block";$("#drinkLiquid").style.height="0";$("#drinkLabel").textContent="LY";$("#game").classList.remove("ready");$("#hint").textContent="Đã lấy ly — ly đặt trên thớt. Chạm nguyên liệu để pha."}
+function placeCup(){cup={active:true,items:[],product:null};document.querySelector("#drink").style.display="block";updateReady();$("#drink").style.display="block";$("#drinkLiquid").style.height="0";$("#drinkLabel").textContent="LY";$("#game").classList.remove("ready");$("#hint").textContent="Đã lấy ly — ly đặt trên thớt. Chạm nguyên liệu để pha."}
 function add(id){if(!cup.active){toast("Hãy chạm vào chồng LY ở góc trái để lấy ly.");return}if(id==="tea"){toast("Chọn trà ô long hoặc trà vải.");return}if(cup.items.includes(id)){toast("Nguyên liệu này đã có.");return}if(stock[id]<=0){toast("Hết nguyên liệu — nhập hàng bằng điện thoại.");return}stock[id]--;cup.items.push(id);$("#drinkLiquid").style.height=Math.min(82,14+cup.items.length*12)+"%";$("#drinkLiquid").style.background=colors[id]||"#8b5a32";$("#drinkLabel").textContent=names[id];const hit=Object.entries(recipes).find(([_,r])=>r.need.length===cup.items.length&&r.need.every(x=>cup.items.includes(x)));if(hit){cup.product=hit[0];$("#drinkLabel").textContent=hit[0];updateReady();$("#hint").textContent="Đúng món — bấm Đưa khách • Thanh toán.";toast("Pha xong "+hit[0])}}
 function trash(){if(!cup.active){toast("Thớt đang trống.");return}cup={active:false,items:[],product:null};$("#drink").style.display="none";updateReady();$("#hint").textContent="Đã bỏ ly — chạm LY để pha lại.";toast("Đã bỏ ly")}
 function serve(){
@@ -206,4 +191,15 @@ function buy(id,p){if(money<p){toast("Không đủ tiền.");return}money-=p;sto
 function inventory(){$("#inventory").innerHTML=Object.entries(stock).map(([k,v])=>'<div class="row"><span>'+names[k]+'</span><b>'+v+'</b></div>').join("")}
 function messages(){const m=[["Minh","Ê hôm nay bán đông không?",["Đông vãi 😭","Đang ế đây.","Tối tao kể."]],["Lan","Tối nay đi ăn không?",["Đi chứ.","Hôm nay tao phải bán.","Để tao xem đã."]],["Nhà cung cấp","Hàng em đặt đã tới rồi nhé.",["Ok anh!","Để em kiểm tra.","👍"]]];$("#messages").innerHTML=m.map(x=>'<div class="chat"><b>'+x[0]+'</b><div>'+x[1]+'</div><div>'+x[2].map(o=>'<button class="reply" onclick="toast(\'Đã gửi: '+o.replace(/'/g,"")+"'\")\">"+o+"</button>").join("")+'</div></div>').join("")}
 fillQueue();updateReady();
+
+document.addEventListener("DOMContentLoaded",()=>{
+ const hot=document.getElementById("cupHot");
+ const drink=document.getElementById("drink");
+ if(hot && drink){
+   hot.onclick=()=>{
+     if(typeof placeCup==="function"){ placeCup(); }
+     drink.style.display="block";
+   };
+ }
+});
 </script></main></body></html>
