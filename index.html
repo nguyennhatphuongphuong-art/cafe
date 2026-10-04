@@ -195,26 +195,36 @@ function updatePatience(){
 setInterval(updatePatience,1000);
 function renderCustomers(){const root=document.querySelector('#customers');root.innerHTML='';customers.forEach((c,i)=>{const d=document.createElement('div');d.className='customer c'+i;d.innerHTML=`<div class="bubble"><span class="drink">${c.order.icon}</span>${c.order.name}<br><small>Nhé ~</small></div><img src="${NPCS['n'+c.img]}"><div class="mood"><span style="width:${c.patience}%"></span></div>`;root.appendChild(d)});current=customers[0]?.order||null;updateFormula();}
 function normalizeIngredient(id){
-  const aliases={tea:'milkTea',blackTea:'oolong',pearl:'boba',topping:'TOPPING'};
-  return aliases[String(id)]||String(id);
+  const aliases={
+    tea:'milkTea',
+    milktea:'milkTea',
+    'trà sữa':'milkTea',
+    blackTea:'oolong',
+    oolongTea:'oolong',
+    'trà ô long':'oolong',
+    pearl:'boba',
+    'trân châu':'boba',
+    topping:'TOPPING'
+  };
+  const key=String(id);
+  return aliases[key]||aliases[key.toLowerCase()]||key;
 }
 function canonicalIngredients(list){
   return (Array.isArray(list)?list:[]).map(normalizeIngredient).sort().join('|');
 }
 function sameIngredientMultiset(a,b){
-  return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&canonicalIngredients(a)===canonicalIngredients(b);
+  if(!Array.isArray(a)||!Array.isArray(b)||a.length!==b.length) return false;
+  return canonicalIngredients(a)===canonicalIngredients(b);
 }
 function recipeMatchesAgainst(recipe,chosen){
   if(!recipe||!Array.isArray(chosen)) return false;
   const selected=chosen.map(normalizeIngredient);
   if(recipe.name==='Trà sữa ô long'){
-    if(selected.length!==4) return false;
-    const topping=selected.filter(x=>TOPPINGS.includes(x));
     const fixed=selected.filter(x=>!TOPPINGS.includes(x));
-    return topping.length===1 && sameIngredientMultiset(fixed,['milkTea','oolong','ice']);
+    const topping=selected.filter(x=>TOPPINGS.includes(x));
+    return selected.length===4 && topping.length===1 && sameIngredientMultiset(fixed,['milkTea','oolong','ice']);
   }
-  const need=recipe.need.map(normalizeIngredient);
-  return sameIngredientMultiset(selected,need);
+  return sameIngredientMultiset(selected,recipe.need);
 }
 function recipeMatches(){return recipeMatchesAgainst(current,items)}
 function recipeMatchesExact(name,chosen){return recipeMatchesAgainst(recipes.find(x=>x.name===name),chosen)}
