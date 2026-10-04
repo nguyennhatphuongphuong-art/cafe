@@ -29,6 +29,8 @@ body{display:flex;justify-content:center;align-items:center;min-height:100dvh;pa
 #cuplabel{position:absolute;left:0;right:0;top:2px;text-align:center;color:#fff;font-size:5px;font-weight:900;text-shadow:0 1px 2px #000}
 #straw{position:absolute;width:3px;height:36%;right:27%;top:-21%;background:#fff;transform:rotate(9deg);border-radius:3px}
 /* Formula/order area */
+#recipeGuide{position:absolute;inset:0;z-index:31;pointer-events:none}.guideBox{position:absolute;width:22px;height:22px;border:2px solid #ffe45c;border-radius:5px;background:#fff3a833;box-shadow:0 0 0 2px #3b2818aa,0 0 12px #ffe45c;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;transform:translate(-50%,-50%);animation:guidePulse 1.2s infinite}.guideBox.top{border-color:#65e36a;box-shadow:0 0 0 2px #173c18aa,0 0 12px #65e36a}@keyframes guidePulse{50%{transform:translate(-50%,-50%) scale(1.12)}}
+.chatThread{display:flex;flex-direction:column;gap:5px;margin-top:7px}.chatBubble{max-width:86%;padding:7px 9px;border-radius:12px;font-size:10px;line-height:1.3}.chatBubble.them{align-self:flex-start;background:#f0e1cf}.chatBubble.me{align-self:flex-end;background:#d8efcf}.replyChoices{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.replyChoices button{border:2px solid #b98a5c;background:#fff;color:#3a2418;border-radius:10px;padding:6px 8px;font-size:9px;font-weight:900}.freeReply{display:flex;gap:5px;margin-top:7px}.freeReply input{flex:1;min-width:0}.freeReply button{border:0;border-radius:9px;background:#62b957;color:#fff;font-weight:900;padding:7px 9px}
 #formula{position:absolute;z-index:33;left:39%;top:70.6%;width:22%;height:5.7%;border:2px solid #7b4b27;border-radius:13px;background:#fff7e7;box-shadow:0 2px 4px #0005;display:flex;align-items:center;justify-content:center;color:#2a1a10;font-weight:900;overflow:hidden}
 #formulaTitle{display:none}
 #formulaItems{display:flex;align-items:center;justify-content:center;gap:5px;font-size:14px;line-height:1;white-space:nowrap}
@@ -74,6 +76,7 @@ body{display:flex;justify-content:center;align-items:center;min-height:100dvh;pa
 </style></head><body><main id="game">
 <div id="bg"></div>
 <div id="customers"></div>
+<div id="recipeGuide" aria-hidden="true"></div>
 <div id="formula"><div id="formulaTitle">Chưa có khách</div><div id="formulaItems">—</div></div>
 <div id="cup"><div id="straw"></div><div id="liquid"></div><div id="cuplabel">LY</div></div>
 <button id="reset" aria-label="Làm lại"></button>
@@ -163,6 +166,7 @@ function customerLeaves(reason='patience'){
   resetCup();
   renderCustomers();
   if(reason==='patience') toast('Khách bỏ đi vì hết kiên nhẫn.');
+  if(reason==='wrong') toast('Khách chê món rồi bỏ đi. Khách tiếp theo đang chờ.');
   if(customers.length===0){
     setTimeout(()=>makeCustomers(Math.floor(Math.random()*5)+1),900);
   }
@@ -212,10 +216,18 @@ function recipeMatchesExact(name, chosen){
   return recipeMatchesAgainst(recipes.find(x=>x.name===name),chosen);
 }
 const ingredientIcons={coffee:'☕',sugar:'◻️',ice:'🧊',condensed:'🥛',fresh:'🥛',milkTea:'🧋',oolong:'🍵',matcha:'🍵',lycheeTea:'🍹',orange:'🍊',pineapple:'🍍',lemon:'🍋',boba:'⚫',coconut:'⬜',fruitJelly:'🟣',TOPPING:'🍬'};
+const guideMap={coffee:'☕',sugar:'▫',ice:'🧊',condensed:'🥛',fresh:'🥛',milkTea:'🧋',oolong:'🍵',matcha:'🍵',lycheeTea:'🍹',orange:'🍊',pineapple:'🍍',lemon:'🍋',boba:'●',coconut:'□',fruitJelly:'◆'};
+function renderRecipeGuide(){
+  const root=document.querySelector('#recipeGuide'); if(!root)return; root.innerHTML=''; if(!current)return;
+  const ids=current.need.includes('TOPPING')?[...current.need.filter(x=>x!=='TOPPING'),...TOPPINGS]:current.need;
+  [...new Set(ids)].forEach(id=>{const el=document.querySelector('#'+id); if(!el)return; const r=el.getBoundingClientRect(), g=document.querySelector('#game').getBoundingClientRect(); const b=document.createElement('div'); b.className='guideBox'+(TOPPINGS.includes(id)&&current.need.includes('TOPPING')?' top':''); b.textContent=guideMap[id]||'•'; b.title=namesVN[id]||id; b.dataset.id=id; b.style.left=((r.left+r.width/2-g.left)/g.width*100)+'%'; b.style.top=((r.top-7-g.top)/g.height*100)+'%'; root.appendChild(b);});
+}
+window.addEventListener('resize',renderRecipeGuide);
 function updateFormula(){
   const title=document.querySelector('#formulaTitle'), list=document.querySelector('#formulaItems');
   if(!current){title.textContent='';list.textContent='—';return;}
   title.textContent=current.name;
+  renderRecipeGuide();
   list.innerHTML=current.need.map((x,i)=>'<span class="formulaItem" aria-label="'+(namesVN[x]||x)+'"><span class="formulaIcon '+(x==='sugar'?'sugarIcon':'')+'">'+(x==='sugar'?'':(ingredientIcons[x]||'•'))+'</span></span>'+ (i<current.need.length-1?'<span class="formulaPlus">+</span>':'')).join('');
 }
 function resetCup(){cup=false;items=[];document.querySelector('#cup').style.display='none';document.querySelector('#pay').classList.remove('ready');document.querySelector('#hint').textContent='Chạm LY để bắt đầu pha.';}
@@ -245,7 +257,8 @@ function serve(){
   const paid={...customers[0].order};
   if(!recipeMatchesExact(paid.name,items)){
     complainFirst();
-    toast('Sai món — khách không trả tiền.');
+    toast('Sai món — khách chê và bỏ đi.');
+    setTimeout(()=>customerLeaves('wrong'),700);
     return;
   }
   customers.shift();
@@ -270,7 +283,31 @@ document.querySelectorAll('[data-screen]').forEach(el=>el.addEventListener('clic
 function addExpense(amount,text){if(ECON.cash<amount){toast('Không đủ tiền.');return false}ECON.cash-=amount;ECON.expense+=amount;ECON.transactions.unshift({text,amount,kind:'out'});return true}
 function renderStock(){const root=document.querySelector('#stockList');root.innerHTML='';STOCK_IDS.forEach(id=>{const row=document.createElement('div');row.className='phoneRow';row.innerHTML='<span>'+namesVN[id]+' · '+money(COST[id])+'<br><small>Tồn: '+(ECON.stock[id]||0)+'</small></span><button>MUA ×5</button>';row.querySelector('button').onclick=()=>{if(addExpense(COST[id]*5,'Nhập '+namesVN[id]+' ×5')){ECON.stock[id]=(ECON.stock[id]||0)+5;toast('Đã nhập '+namesVN[id]+' ×5');renderStock();updateEconomyUI()}};root.appendChild(row)});}
 document.querySelector('#buyAll5').onclick=()=>{const total=STOCK_IDS.reduce((a,id)=>a+COST[id]*5,0);if(!addExpense(total,'Nhập toàn bộ nguyên liệu ×5'))return;STOCK_IDS.forEach(id=>ECON.stock[id]=(ECON.stock[id]||0)+5);toast('Đã nhập toàn bộ ×5 · '+money(total));renderStock();updateEconomyUI()};
-function renderMessages(){const root=document.querySelector('#chatList');root.innerHTML='';FRIENDS.forEach((f,i)=>{const row=document.createElement('div');row.className='phoneCard';const reply=ECON.messages[f.name]||'Chưa trả lời';row.innerHTML='<strong>💬 '+f.name+'</strong><br>“'+f.q+'”<div class="chatMsg">Bạn: '+reply+'</div><button class="phoneAction">Trả lời</button>';row.querySelector('button').onclick=()=>{const answers=['“Ổn áp, đang bán đây 😎”','“Tối nay chắc rảnh.”','“Tao đang xoay vốn đã 😂”'];const a=answers[Math.floor(Math.random()*answers.length)];ECON.messages[f.name]=a;ECON.rep=Math.min(100,ECON.rep+1);toast('Đã nhắn cho '+f.name);renderMessages();updateEconomyUI()};root.appendChild(row)});}
+const FRIENDS_POOL=[
+{name:'Khoa',q:'Hôm nay quán bán ổn không?',choices:['Cũng ổn, hơi mệt 😅','Ế muốn khóc luôn 😂','Đông hơn tao nghĩ.']},
+{name:'Hương',q:'Tối nay có rảnh không?',choices:['Chắc có, sao thế?','Tao còn phải chốt sổ quán.','Để lát tao báo nhé.']},
+{name:'Minh',q:'Mày nhập hàng ở đâu vậy?',choices:['Tao gọi mối quen.','Tìm được chỗ khá rẻ.','Sao, mày cũng định mở quán à?']},
+{name:'Linh',q:'Mai nhớ kể tao nghe chuyện quán nhé.',choices:['Ừ, mai tao kể.','Có gì đâu mà kể 😂','Nhớ chứ.']},
+{name:'Tuấn',q:'Có cần tao phụ một tay không?',choices:['Có, mai qua phụ tao nhé.','Không cần đâu, cảm ơn mày.','Để tao xem khách thế nào đã.']},
+{name:'Phúc',q:'Nghe nói quán mới mở hả?',choices:['Ừ, đang tập làm chủ 😎','Ai đồn vậy trời 😂','Mới chạy thử thôi.']}];
+function friendData(){return FRIENDS_POOL.slice(0,5)}
+function renderMessages(){
+ const root=document.querySelector('#chatList');root.innerHTML='';
+ friendData().forEach(f=>{
+  const row=document.createElement('div');row.className='phoneCard';
+  const history=ECON.messages[f.name]||{me:[],seen:false};
+  if(typeof history==='string') ECON.messages[f.name]={me:[history],seen:true};
+  const h=ECON.messages[f.name]||{me:[],seen:false};
+  const me=(h.me||[]).map(x=>'<div class=\"chatBubble me\">'+escapeHtml(x)+'</div>').join('');
+  row.innerHTML='<strong>💬 '+f.name+'</strong><div class=\"chatThread\"><div class=\"chatBubble them\">'+f.q+'</div>'+me+'</div><div class=\"replyChoices\">'+f.choices.map((a,i)=>'<button data-i=\"'+i+'\">'+a+'</button>').join('')+'</div><div class=\"freeReply\"><input maxlength=80 placeholder=\"Tự viết tin nhắn...\"><button>Gửi</button></div>';
+  row.querySelectorAll('.replyChoices button').forEach(btn=>btn.onclick=()=>sendFriendReply(f, f.choices[+btn.dataset.i]));
+  const input=row.querySelector('input');row.querySelector('.freeReply button').onclick=()=>{const v=input.value.trim();if(v)sendFriendReply(f,v)};
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){const v=input.value.trim();if(v)sendFriendReply(f,v)}});
+  root.appendChild(row);
+ });
+}
+function escapeHtml(v){return String(v).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));}
+function sendFriendReply(f,text){const h=ECON.messages[f.name]||{me:[],seen:false};if(typeof h==='string')h={me:[h],seen:true};h.me=h.me||[];h.me.push(text);h.seen=true;ECON.messages[f.name]=h;ECON.rep=Math.min(100,ECON.rep+1);toast('Đã gửi cho '+f.name);renderMessages();updateEconomyUI()}
 function renderBank(){document.querySelector('#bankCash').textContent=money(ECON.cash);document.querySelector('#bankAssets').textContent=money(Object.values(ECON.assets).reduce((sum,a)=>sum+a.price,0));document.querySelector('#bankDebt').textContent=money(ECON.debt);document.querySelector('#transactions').innerHTML=ECON.transactions.slice(0,8).map(t=>'<div class="phoneRow"><span>'+t.text+'</span><b style="color:'+(t.kind==='in'?'#23822b':'#a22')+'">'+(t.kind==='in'?'+':'-')+money(t.amount)+'</b></div>').join('')||'Chưa có giao dịch.';}
 document.querySelector('#loan500').onclick=()=>{if(ECON.debt>0){toast('Bạn đang có khoản vay.');return}ECON.cash+=500000;ECON.debt=600000;ECON.debtDue=ECON.day+5;ECON.transactions.unshift({text:'Vay ngân hàng',amount:500000,kind:'in'});toast('Đã vay 500.000đ · hạn ngày '+ECON.debtDue);renderBank();updateEconomyUI()};
 function renderStats(){document.querySelector('#statRevenue').textContent=money(ECON.revenue);document.querySelector('#statExpense').textContent=money(ECON.expense);document.querySelector('#statProfit').textContent=money(ECON.revenue-ECON.expense);document.querySelector('#statCustomers').textContent=ECON.served;document.querySelector('#statCups').textContent=ECON.cups;const sorted=Object.entries(ECON.sales).sort((a,b)=>b[1]-a[1]);document.querySelector('#bestSellers').innerHTML=sorted.length?sorted.slice(0,5).map(x=>'🍹 '+x[0]+' × '+x[1]).join('<br>'):'Chưa có dữ liệu.';}
