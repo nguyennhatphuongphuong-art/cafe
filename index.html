@@ -73,6 +73,8 @@ body{display:flex;justify-content:center;align-items:center;min-height:100dvh;pa
 
 /* ECONOMY / PHONE V3 */
 .phoneGrid3{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.phoneApp3{border:2px solid #8a5a31;border-radius:15px;background:#fff3dc;min-height:72px;padding:8px;text-align:left;font-weight:900;color:#3a2418}.phoneApp3 .appIcon{font-size:22px;display:block}.phoneList{max-height:calc(100vh - 210px);overflow:auto}.phoneRow{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:7px 0;border-bottom:1px dashed #c8a27a}.phoneRow:last-child{border-bottom:0}.phoneRow button{border:0;border-radius:8px;background:#62b957;color:white;font-weight:900;padding:6px 8px;font-size:9px}.phoneInput{width:100%;box-sizing:border-box;padding:9px;border:2px solid #b98a5c;border-radius:9px;background:#fff}.dayEndBox{background:#fff8ed;border:3px solid #8a5a31;border-radius:15px;padding:12px}.statBig{font-size:18px;font-weight:1000}.dangerBtn{background:#c94b3d!important}.goldBtn{background:#d39b3e!important}.owned{background:#e8f5e2!important;color:#275b26!important}.debt{color:#a22;font-weight:900}.miniBar{height:8px;background:#ead8bf;border-radius:99px;overflow:hidden}.miniBar i{display:block;height:100%;background:#5caf4d}.chatMsg{padding:8px;border-radius:12px;background:#f2e4d2;margin:5px 0}.chatMe{background:#d9efcf;text-align:right}
+
+#moneyHud{position:absolute;z-index:80;left:10px;top:10px;display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:12px;background:rgba(35,20,12,.88);border:2px solid rgba(255,218,126,.72);box-shadow:0 3px 10px rgba(0,0,0,.28);color:#ffe29a;font-weight:900;font-size:15px;text-shadow:0 1px 2px #000;pointer-events:none;white-space:nowrap}.moneyCoin{font-size:16px}.moneyPop{animation:moneyPop .35s ease}@keyframes moneyPop{0%{transform:scale(1)}45%{transform:scale(1.12)}100%{transform:scale(1)}}
 </style></head><body><main id="game">
 <div id="bg"></div>
 <div id="customers"></div>
@@ -192,29 +194,30 @@ function updatePatience(){
 }
 setInterval(updatePatience,1000);
 function renderCustomers(){const root=document.querySelector('#customers');root.innerHTML='';customers.forEach((c,i)=>{const d=document.createElement('div');d.className='customer c'+i;d.innerHTML=`<div class="bubble"><span class="drink">${c.order.icon}</span>${c.order.name}<br><small>Nhé ~</small></div><img src="${NPCS['n'+c.img]}"><div class="mood"><span style="width:${c.patience}%"></span></div>`;root.appendChild(d)});current=customers[0]?.order||null;updateFormula();}
+function normalizeIngredient(id){
+  const aliases={tea:'milkTea',blackTea:'oolong',pearl:'boba',topping:'TOPPING'};
+  return aliases[String(id)]||String(id);
+}
 function canonicalIngredients(list){
-  return list.map(String).map(x=>x.trim()).sort().join('|');
+  return (Array.isArray(list)?list:[]).map(normalizeIngredient).sort().join('|');
 }
 function sameIngredientMultiset(a,b){
-  if(!Array.isArray(a)||!Array.isArray(b)||a.length!==b.length) return false;
-  return canonicalIngredients(a)===canonicalIngredients(b);
+  return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&canonicalIngredients(a)===canonicalIngredients(b);
 }
-function recipeMatchesAgainst(recipe, chosen){
-  if(!recipe || !Array.isArray(chosen) || chosen.length!==recipe.need.length) return false;
-  const hasToppingSlot=recipe.need.includes('TOPPING');
-  if(!hasToppingSlot) return sameIngredientMultiset(chosen,recipe.need);
-  const fixedNeed=recipe.need.filter(x=>x!=='TOPPING');
-  const fixedChosen=chosen.filter(x=>!TOPPINGS.includes(x));
-  if(!sameIngredientMultiset(fixedChosen,fixedNeed)) return false;
-  const chosenToppings=chosen.filter(x=>TOPPINGS.includes(x));
-  return chosenToppings.length===1 && new Set(chosenToppings).size===1;
+function recipeMatchesAgainst(recipe,chosen){
+  if(!recipe||!Array.isArray(chosen)) return false;
+  const selected=chosen.map(normalizeIngredient);
+  if(recipe.name==='Trà sữa ô long'){
+    if(selected.length!==4) return false;
+    const topping=selected.filter(x=>TOPPINGS.includes(x));
+    const fixed=selected.filter(x=>!TOPPINGS.includes(x));
+    return topping.length===1 && sameIngredientMultiset(fixed,['milkTea','oolong','ice']);
+  }
+  const need=recipe.need.map(normalizeIngredient);
+  return sameIngredientMultiset(selected,need);
 }
-function recipeMatches(){
-  return recipeMatchesAgainst(current,items);
-}
-function recipeMatchesExact(name, chosen){
-  return recipeMatchesAgainst(recipes.find(x=>x.name===name),chosen);
-}
+function recipeMatches(){return recipeMatchesAgainst(current,items)}
+function recipeMatchesExact(name,chosen){return recipeMatchesAgainst(recipes.find(x=>x.name===name),chosen)}
 const ingredientIcons={coffee:'☕',sugar:'◻️',ice:'🧊',condensed:'🥛',fresh:'🥛',milkTea:'🧋',oolong:'🍵',matcha:'🍵',lycheeTea:'🍹',orange:'🍊',pineapple:'🍍',lemon:'🍋',boba:'⚫',coconut:'⬜',fruitJelly:'🟣',TOPPING:'🍬'};
 const guideMap={coffee:'☕',sugar:'▫',ice:'🧊',condensed:'🥛',fresh:'🥛',milkTea:'🧋',oolong:'🍵',matcha:'🍵',lycheeTea:'🍹',orange:'🍊',pineapple:'🍍',lemon:'🍋',boba:'●',coconut:'□',fruitJelly:'◆'};
 function renderRecipeGuide(){
@@ -315,7 +318,15 @@ function renderStore(){const root=document.querySelector('#storeList');root.inne
 function renderAssets(){const root=document.querySelector('#assetList');root.innerHTML='';const vals=Object.values(ECON.assets);root.innerHTML=vals.length?vals.map(a=>'<div class="phoneCard owned"><strong>'+a.name+'</strong><br>'+a.desc+'<br>Giá trị: '+money(a.price)+'</div>').join(''):'<div class="phoneCard">Chưa sở hữu tài sản nào.</div>';}
 function renderEndDay(){const profit=ECON.revenue-ECON.expense;document.querySelector('#endDaySummary').innerHTML='<b>Ngày '+ECON.day+'</b><br>💰 Đầu ngày: '+money(ECON.cash-ECON.revenue+ECON.expense)+'<br>📈 Doanh thu: +'+money(ECON.revenue)+'<br>📦 Chi phí: -'+money(ECON.expense)+'<br>💵 Lợi nhuận: <b>'+money(profit)+'</b><br>💰 Tiền hiện tại: <b>'+money(ECON.cash)+'</b><br>⭐ Danh tiếng: '+Math.round(ECON.rep)+'/100';}
 document.querySelector('#finishDay').onclick=()=>{if(ECON.ended)return;ECON.ended=true;if(ECON.debt>0&&ECON.day>=ECON.debtDue){if(ECON.cash>=ECON.debt){ECON.cash-=ECON.debt;ECON.transactions.unshift({text:'Trả khoản vay',amount:ECON.debt,kind:'out'});ECON.debt=0;toast('Đã trả nợ đúng hạn.')}else{toast('Không đủ tiền trả nợ!')}}ECON.day++;ECON.revenue=0;ECON.expense=0;ECON.served=0;ECON.cups=0;ECON.sales={};ECON.ended=false;customers=[];renderCustomers();setTimeout(()=>makeCustomers(Math.floor(Math.random()*5)+1),500);renderEndDay();updateEconomyUI();toast('Chào ngày '+ECON.day+'!');};
-function updateEconomyUI(){const ids=['phoneCash'];ids.forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=money(ECON.cash)});const r=document.getElementById('phoneRep');if(r)r.textContent=Math.round(ECON.rep);const c=document.getElementById('phoneClock');if(c)c.textContent='Ngày '+ECON.day+' · 17:24';}
+function updateEconomyUI(){
+  const value=money(ECON.cash);
+  ['phoneCash','moneyHudValue'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=value});
+  const hud=document.getElementById('moneyHud'); if(hud){hud.classList.remove('moneyPop'); void hud.offsetWidth; hud.classList.add('moneyPop');}
+  const r=document.getElementById('phoneRep');if(r)r.textContent=Math.round(ECON.rep);
+  const c=document.getElementById('phoneClock');if(c)c.textContent='Ngày '+ECON.day+' · 17:24';
+  if(typeof renderBank==='function' && document.getElementById('phoneBank')?.classList.contains('active')) renderBank();
+}
+
 window.__recipeSelfTest=()=>{
   const originalCurrent=current, originalItems=[...items];
   const results={};
@@ -333,6 +344,15 @@ window.__recipeSelfTest=()=>{
   run('Oolong fruitJelly',oolong,['milkTea','oolong','ice','fruitJelly']);
   current=originalCurrent;items=originalItems;
   return results;
+};
+
+window.__recipeSelfTestAll=()=>{
+ const out=[];
+ for(const r of recipes){
+  const choices=r.name==='Trà sữa ô long'?TOPPINGS.map(t=>['milkTea','oolong','ice',t]):[r.need];
+  (Array.isArray(choices[0])&&r.name!=='Trà sữa ô long'?choices:[choices]).forEach(ch=>out.push({name:r.name,chosen:ch,ok:recipeMatchesExact(r.name,ch)}));
+ }
+ return out;
 };
 
 try{const saved=localStorage.getItem("quanCaPheEconomyV3");if(saved)Object.assign(ECON,JSON.parse(saved));}catch(e){}
