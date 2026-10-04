@@ -23,16 +23,28 @@ body{display:flex;justify-content:center;min-height:100vh;font-family:system-ui,
   display:block;
 }
 
-#npcLayer{position:absolute;left:15.5%;right:1.5%;top:24.8%;height:18.5%;z-index:20;display:flex;align-items:flex-end;gap:0;pointer-events:none;overflow:visible}
+#npcLayer{
+position:absolute;left:17%;right:1.5%;top:29.0%;height:14.5%;z-index:20;
+display:flex;align-items:flex-end;gap:0;pointer-events:none;overflow:visible
+}
 .npc{position:relative;flex:1;height:100%;display:flex;justify-content:center;align-items:flex-end;overflow:visible}
-.npc img{height:145%;max-width:94%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 3px 3px #0005)}
+.npc img{height:100%;max-width:94%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 3px 3px #0005)}
 
- .bubble{position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:94%;min-height:39px;padding:5px 5px 5px 24px;background:linear-gradient(#fffdf5,#fff3d9);color:#25170e;border:2px solid #6e3e1d;border-radius:11px;text-align:center;font-size:7.1px;line-height:1.12;font-weight:950;box-shadow:0 3px 0 #3d2110;z-index:5}
-.bubble img{position:absolute;left:4px;top:7px;width:15px;height:20px;object-fit:contain}
-.bubble:after{content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#6e3e1d}
+ .bubble{
+position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:92%;min-height:34px;
+padding:5px 6px;background:#fff8e7;color:#2b1a10;border:2px solid #754522;
+border-radius:10px;text-align:center;font-size:7.6px;line-height:1.12;font-weight:950;
+box-shadow:0 3px 0 #3d2110;z-index:5
+}
 
-#menuPriceLayer{position:absolute;z-index:65;left:20.4%;top:39.9%;width:2.8%;height:33.5%;pointer-events:none;color:#f7d66b;font-size:7px;font-weight:1000;text-align:right;line-height:1}
-.menu-price{position:absolute;right:0;white-space:nowrap;text-shadow:0 1px 1px #2a160c;background:rgba(55,28,13,.18);padding:0 1px;border-radius:2px}
+.bubble:after{content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);
+border:5px solid transparent;border-top-color:#754522}
+
+#menuPriceLayer{
+position:absolute;z-index:65;left:15.7%;top:37.3%;width:4.0%;height:38%;
+pointer-events:none;color:#f7d66b;font-size:7.8px;font-weight:1000;text-align:right;line-height:1
+}
+.menu-price{position:absolute;right:0;white-space:nowrap;text-shadow:0 1px 1px #2a160c}
 
 .hot{position:absolute;z-index:50;border:0;background:transparent;padding:0;touch-action:manipulation}
 .hot:active{background:rgba(255,211,70,.12);border-radius:10px;box-shadow:inset 0 0 0 2px rgba(255,211,70,.35)}
@@ -47,19 +59,38 @@ body{display:flex;justify-content:center;min-height:100vh;font-family:system-ui,
 #iceHot{left:87%;top:55%;width:7%;height:8%}#bobaHot{left:21%;top:65%;width:12%;height:8%}
 #coconutHot{left:36%;top:65%;width:12%;height:8%}#fruitHot{left:51%;top:65%;width:12%;height:8%}
 #trashHot{left:69%;top:79%;width:18%;height:12%}
-#drink{position:absolute;z-index:80;left:45.8%;top:79.0%;width:13%;height:13.5%;display:none;overflow:visible;pointer-events:none}
+#drink{
+position:absolute;z-index:80;left:45.8%;top:79.0%;width:13%;height:13.5%;
+display:none;overflow:visible;pointer-events:none
+}
 #drink img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:3}
-#drinkLiquid{position:absolute;left:24%;right:24%;bottom:12%;height:0;background:#6a351e;border-radius:4px 4px 14px 14px;transition:.2s;z-index:2;clip-path:polygon(0 0,100% 0,88% 100%,12% 100%)}
+#drinkLiquid{
+position:absolute;left:25%;right:25%;bottom:12%;height:0;
+background:linear-gradient(180deg,#9a5a2d,#4b2412);border-radius:5px 5px 14px 14px;
+transition:.2s;z-index:2;clip-path:polygon(0 0,100% 0,88% 100%,12% 100%);
+box-shadow:inset 0 2px 3px #ffffff55
+}
 #drinkLabel{display:none}
-#recipeBubble{position:absolute;z-index:100;left:36%;right:36%;top:71.5%;min-height:9.5%;background:#fff8e7;color:#2d1a10;border:2px solid #754522;border-radius:11px;padding:5px 7px;text-align:center;font-size:8px;font-weight:950;display:none;box-shadow:0 2px 0 #3b2112;overflow:hidden}
+#recipeBubble{
+position:absolute;z-index:100;left:34%;right:34%;top:71.2%;min-height:9%;
+background:#fff8e7;color:#2d1a10;border:2px solid #754522;border-radius:11px;
+padding:5px 7px;text-align:center;font-size:8px;font-weight:950;display:none;
+box-shadow:0 2px 0 #3b2112;overflow:hidden
+}
 #recipeBubble .formula-title{font-size:8px;font-weight:1000;line-height:1.05}
 #recipeBubble .formula-icons{display:flex;justify-content:center;align-items:center;gap:3px;margin-top:3px}
 #recipeBubble .ficon{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center}
 #recipeBubble .ficon img{width:20px;height:20px;object-fit:contain}
 #recipeBubble .plus{font-size:9px;font-weight:1000}
 
-#serveBtn{position:absolute;z-index:150;left:78%;top:87.2%;width:20%;min-height:8.5%;background:linear-gradient(#72ed4d,#16a62b);color:#fff;border:3px solid #c8ff9a;border-radius:12px;padding:5px 4px;font-size:8px;line-height:1.05;font-weight:1000;box-shadow:0 3px 0 #125f1a,0 0 9px #79ff4b88;display:block;opacity:.32;filter:grayscale(.65);pointer-events:none;text-shadow:0 1px 2px #135b16;transition:.15s}
-#game.ready #serveBtn{opacity:1 !important;filter:none !important;pointer-events:auto !important;transform:scale(1.02)}.ready #serveBtn{opacity:1;pointer-events:auto}
+#serveBtn{
+position:absolute;z-index:150;left:78%;top:88.8%;width:20.5%;min-height:8%;
+background:linear-gradient(#73ef4d,#18a92d);color:#fff;border:3px solid #c9ff9a;
+border-radius:12px;padding:5px 4px;font-size:8px;line-height:1.05;font-weight:1000;
+box-shadow:0 3px 0 #125f1a,0 0 9px #79ff4b88;display:block;opacity:1;filter:none;
+pointer-events:auto;text-shadow:0 1px 2px #135b16;transition:.15s
+}
+#game.ready #serveBtn{transform:scale(1.02)}
 #hint{position:absolute;z-index:61;left:24%;right:25%;bottom:3.4%;font-size:8px;text-align:center;color:#fff;font-weight:900;text-shadow:0 2px 3px #000;pointer-events:none}
 #toast{position:absolute;z-index:120;left:50%;top:51%;transform:translate(-50%,-50%);background:#fff5dc;color:#2d1a10;border:2px solid #754522;border-radius:10px;padding:8px 11px;font-size:10px;font-weight:1000;display:none;white-space:nowrap;box-shadow:0 4px 0 #32180c}
 #phone{position:absolute;z-index:200;inset:7% 7% 6%;display:none;background:#151515;border:4px solid #333;border-radius:27px;overflow:hidden;box-shadow:0 12px 35px #000c;color:#fff}
@@ -93,7 +124,7 @@ const NPC={"student_m_open.png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA
 const recipes={"Cà phê đen": {"need": ["coffee", "sugar", "ice"], "price": 15000}, "Cà phê sữa": {"need": ["coffee", "condensed", "ice"], "price": 17000}, "Bạc xỉu": {"need": ["fresh", "coffee", "condensed"], "price": 20000}, "Trà sữa truyền thống": {"need": ["milkTea", "ice", "boba"], "price": 15000}, "Trà sữa ô long": {"need": ["milkTea", "oolong", "ice", "fruitJelly"], "price": 20000}, "Trà sữa matcha": {"need": ["milkTea", "matcha", "ice"], "price": 20000}, "Nước ép cam": {"need": ["orange", "ice", "sugar"], "price": 25000}, "Nước ép dứa": {"need": ["pineapple", "ice", "sugar"], "price": 25000}, "Nước chanh": {"need": ["lemon", "ice", "sugar"], "price": 15000}, "Trà vải": {"need": ["lycheeTea", "sugar", "ice"], "price": 15000}};
 const names={coffee:"Cà phê",milkTea:"Trà sữa",oolong:"Trà ô long",matcha:"Matcha",lycheeTea:"Trà vải",fresh:"Sữa tươi",condensed:"Sữa đặc",sugar:"Đường",ice:"Đá",orange:"Cam",pineapple:"Dứa",lemon:"Chanh",boba:"Trân châu đen",coconut:"Thạch dừa",fruitJelly:"Thạch trái cây"};
 const menuPrices={"Cà phê đen":"15k","Cà phê sữa":"17k","Bạc xỉu":"20k","Trà sữa truyền thống":"15k","Trà sữa ô long":"20k","Trà sữa matcha":"20k","Nước ép cam":"25k","Nước ép dứa":"25k","Nước chanh":"15k","Trà vải":"15k","Trân châu đen":"5k","Thạch dừa":"5k","Thạch trái cây":"5k"};
-const priceTops=[1.5,4.2,6.9,18.0,20.7,23.4,36.5,39.2,41.9,44.6,57.8,60.5,63.2];
+const priceTops=[0.8,6.2,11.6,23.0,28.5,34.0,46.0,52.0,58.0,64.0,82.0,88.0,94.0];
 function renderMenuPrices(){const box=$("#menuPriceLayer");box.innerHTML=Object.values(menuPrices).map((p,i)=>'<span class="menu-price" style="top:'+priceTops[i]+'%">'+p+'</span>').join("")}
 
 const colors={coffee:"#56301b",milkTea:"#c88b55",oolong:"#90703f",matcha:"#75a83e",lycheeTea:"#db665d",fresh:"#f3eee5",condensed:"#d79a58",sugar:"#f7f1e4",ice:"#86d3ff",orange:"#ff9419",pineapple:"#efbd45",lemon:"#8ac945",boba:"#21191b",coconut:"#fff7e8",fruitJelly:"#e75d68"};
@@ -117,15 +148,23 @@ let queue=[],cup={active:false,items:[],product:null};
 let money=1250000,stock={coffee:20,milkTea:20,oolong:15,matcha:15,lycheeTea:15,fresh:20,condensed:20,sugar:30,ice:40,orange:15,pineapple:15,lemon:20,boba:20,coconut:20,fruitJelly:20};
 const $=s=>document.querySelector(s), toast=t=>{toastEl.textContent=t;toastEl.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>toastEl.style.display="none",1000)};
 const toastEl=$("#toast");
-function renderQueue(){const q=$("#npcLayer");q.innerHTML="";queue.forEach((c,i)=>{const e=document.createElement("div");e.className="npc";e.innerHTML='<div class="bubble"><img src="data:image/png;base64,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" alt="">'+c[2]+'</div><img class="open" src="'+NPC[c[0]]+'"><img class="blink" src="'+NPC[c[1]]+'" style="display:none">';q.appendChild(e);const a=e.querySelector(".open"),b=e.querySelector(".blink");setTimeout(function blink(){if(!e.isConnected)return;a.style.display="none";b.style.display="block";setTimeout(()=>{if(e.isConnected){b.style.display="none";a.style.display="block"}},180);setTimeout(blink,3800+Math.random()*2200)},1800+i*600)})}
+function renderQueue(){
+  const q=$("#npcLayer"); q.innerHTML="";
+  queue.forEach((c,i)=>{
+    const e=document.createElement("div");
+    e.className="npc";
+    e.innerHTML='<div class="bubble">'+c[2]+'</div><img class="open" src="'+NPC[c[0]]+'">';
+    q.appendChild(e);
+  });
+}
 function fillQueue(){
- if(queue.length===0) queue=initialCustomers.slice();
- while(queue.length<5){
-   const pool=customers.filter(c=>!queue.some(q=>q[0]===c[0]));
-   const pick=pool.length?pool:customers;
-   queue.push(pick[Math.floor(Math.random()*pick.length)]);
- }
- renderQueue();setRecipe();
+  if(queue.length===0){
+    const count=1+Math.floor(Math.random()*5);
+    const shuffled=[...customers].sort(()=>Math.random()-0.5);
+    queue=shuffled.slice(0,Math.min(count,shuffled.length));
+  }
+  renderQueue();
+  setRecipe();
 }
 function setRecipe(){
  if(!queue[0]){$("#recipeBubble").style.display="none";return}
@@ -140,12 +179,12 @@ function placeCup(){cup={active:true,items:[],product:null};updateReady();$("#dr
 function add(id){if(!cup.active){toast("Chạm LY trên thớt trước.");return}if(id==="tea"){toast("Chọn trà ô long hoặc trà vải.");return}if(cup.items.includes(id)){toast("Nguyên liệu này đã có.");return}if(stock[id]<=0){toast("Hết nguyên liệu — nhập hàng bằng điện thoại.");return}stock[id]--;cup.items.push(id);$("#drinkLiquid").style.height=Math.min(82,14+cup.items.length*12)+"%";$("#drinkLiquid").style.background=colors[id]||"#8b5a32";$("#drinkLabel").textContent=names[id];const hit=Object.entries(recipes).find(([_,r])=>r.need.length===cup.items.length&&r.need.every(x=>cup.items.includes(x)));if(hit){cup.product=hit[0];$("#drinkLabel").textContent=hit[0];updateReady();$("#hint").textContent="Đúng món — bấm Đưa khách • Thanh toán.";toast("Pha xong "+hit[0])}}
 function trash(){if(!cup.active){toast("Thớt đang trống.");return}cup={active:false,items:[],product:null};$("#drink").style.display="none";updateReady();$("#hint").textContent="Đã bỏ ly — chạm LY để pha lại.";toast("Đã bỏ ly")}
 function serve(){if(!queue[0]||!cup.product){toast("Chưa có món hoàn chỉnh.");return}if(cup.product!==queue[0][3]){toast("Sai món khách gọi.");return}const p=recipes[cup.product].price;money+=p;const old=queue.shift();cup={active:false,items:[],product:null};$("#drink").style.display="none";updateReady();$("#hint").textContent="Khách đã thanh toán +"+p.toLocaleString("vi-VN")+"đ và rời quầy.";toast("Thanh toán +"+p.toLocaleString("vi-VN")+"đ");setTimeout(fillQueue,450)}
-$("#cupHot").onclick=placeCup;$("#trashHot").onclick=trash;$("#serveBtn").onclick=()=>{if(!$("#game").classList.contains("ready")){toast("Pha đúng món trước.");return}serve()};document.querySelectorAll(".hot[data-id]").forEach(b=>b.onclick=()=>add(b.dataset.id));
+$("#cupHot").onclick=placeCup;$("#trashHot").onclick=trash;$("#serveBtn").onclick=serve;document.querySelectorAll(".hot[data-id]").forEach(b=>b.onclick=()=>add(b.dataset.id));
 $("#phoneHot").onclick=()=>openPhone("call");$("#closePhone").onclick=()=>$("#phone").classList.remove("open");document.querySelectorAll(".app").forEach(b=>b.onclick=()=>openPhone(b.dataset.panel));
 function openPhone(p){$("#phone").classList.add("open");document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));$("#panel-"+p).classList.add("active");if(p==="call")supplier();if(p==="stock")inventory();if(p==="messages")messages()}
 function supplier(){const a=[["coffee","Cà phê",100000],["milkTea","Trà sữa",90000],["oolong","Trà ô long",80000],["matcha","Matcha",90000],["lycheeTea","Trà vải",85000],["fresh","Sữa tươi",70000],["condensed","Sữa đặc",65000],["sugar","Đường",30000],["ice","Đá",25000],["orange","Cam",60000],["pineapple","Dứa",60000],["lemon","Chanh",40000],["boba","Trân châu đen",50000],["coconut","Thạch dừa",45000],["fruitJelly","Thạch trái cây",50000]];$("#supplier").innerHTML=a.map(x=>'<div class="row"><span>'+x[1]+'<br><small>+5 phần • '+x[2].toLocaleString("vi-VN")+'đ</small></span><button class="buy" onclick="buy(\''+x[0]+'\','+x[2]+')">Nhập</button></div>').join("")}
 function buy(id,p){if(money<p){toast("Không đủ tiền.");return}money-=p;stock[id]+=5;inventory();toast("Đã nhập +5")}
 function inventory(){$("#inventory").innerHTML=Object.entries(stock).map(([k,v])=>'<div class="row"><span>'+names[k]+'</span><b>'+v+'</b></div>').join("")}
 function messages(){const m=[["Minh","Ê hôm nay bán đông không?",["Đông vãi 😭","Đang ế đây.","Tối tao kể."]],["Lan","Tối nay đi ăn không?",["Đi chứ.","Hôm nay tao phải bán.","Để tao xem đã."]],["Nhà cung cấp","Hàng em đặt đã tới rồi nhé.",["Ok anh!","Để em kiểm tra.","👍"]]];$("#messages").innerHTML=m.map(x=>'<div class="chat"><b>'+x[0]+'</b><div>'+x[1]+'</div><div>'+x[2].map(o=>'<button class="reply" onclick="toast(\'Đã gửi: '+o.replace(/'/g,"")+"'\")\">"+o+"</button>").join("")+'</div></div>').join("")}
-renderMenuPrices();fillQueue();
+renderMenuPrices();fillQueue();updateReady();
 </script></main></body></html>
