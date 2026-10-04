@@ -23,11 +23,20 @@ body{display:flex;justify-content:center;min-height:100vh;font-family:system-ui,
   display:block;
 }
 
-#npcLayer{position:absolute;left:9.5%;right:8.5%;top:29.0%;height:13.5%;z-index:20;display:block;pointer-events:none;overflow:visible}
-.npc{position:absolute;bottom:0;width:15.5%;height:100%;display:flex;justify-content:center;align-items:flex-end;overflow:visible}
-.npc img{height:100%;width:100%;max-width:none;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 3px 3px #0005)}
-.bubble{position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:118%;min-height:34px;padding:5px 6px;background:#fff8e7;color:#2b1a10;border:2px solid #754522;border-radius:10px;text-align:center;font-size:7.6px;line-height:1.12;font-weight:950;box-shadow:0 3px 0 #3d2110;z-index:5}
-.bubble:after{content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#754522}
+#npcLayer{position:absolute;left:9.5%;right:8.5%;top:28.7%;height:14.0%;z-index:20;display:block;pointer-events:none;overflow:visible}
+.npc{position:absolute;bottom:0;width:15.5%;height:100%;display:flex;justify-content:center;align-items:flex-end;overflow:visible;box-sizing:border-box}
+.npc img{height:100%;width:auto;max-width:100%;object-fit:contain;object-position:center bottom;display:block;filter:drop-shadow(0 3px 3px #0005)}
+.bubble{
+position:absolute;top:-18%;left:50%;transform:translateX(-50%);
+width:105%;min-height:26px;padding:4px 5px;
+background:#fff8e7;color:#2b1a10;border:2px solid #754522;
+border-radius:9px;text-align:center;font-size:7px;line-height:1.08;
+font-weight:950;box-shadow:0 2px 0 #3d2110;z-index:5;
+}
+.bubble:after{
+content:"";position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
+border:4px solid transparent;border-top-color:#754522
+}
 
 #menuPriceLayer{display:none!important;
 position:absolute;z-index:65;left:15.7%;top:37.3%;width:4.0%;height:38%;
@@ -38,7 +47,7 @@ pointer-events:none;color:#f7d66b;font-size:7.8px;font-weight:1000;text-align:ri
 .hot{position:absolute;z-index:50;border:0;background:transparent;padding:0;touch-action:manipulation}
 .hot:active{background:rgba(255,211,70,.12);border-radius:10px;box-shadow:inset 0 0 0 2px rgba(255,211,70,.35)}
 #phoneHot{left:64%;top:4%;width:8%;height:8%}
-#cupHot{left:28%;top:80%;width:18%;height:9%}
+#cupHot{left:3.0%;top:78.0%;width:15.5%;height:10.5%;}
 #coffeeHot{left:20%;top:43%;width:10%;height:9%}#teaHot{left:31%;top:43%;width:10%;height:9%}
 #oolongHot{left:43%;top:43%;width:10%;height:9%}#milkTeaHot{left:54%;top:43%;width:10%;height:9%}
 #matchaHot{left:65%;top:43%;width:10%;height:9%}#lycheeHot{left:76%;top:43%;width:10%;height:9%}
@@ -103,7 +112,7 @@ pointer-events:auto;text-shadow:0 1px 2px #135b16;transition:.15s
 <button class="hot" id="coconutHot" data-id="coconut"></button><button class="hot" id="fruitHot" data-id="fruitJelly"></button>
 <button class="hot" id="trashHot" aria-label="Thùng rác"></button>
 <div id="recipeBubble"></div><div id="drink"><div id="drinkLiquid"></div><img src="data:image/png;base64,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" alt="Ly" /><div id="drinkLabel">LY</div></div>
-<button id="serveBtn"><span style="font-size:16px;vertical-align:middle">🥤</span><br>Đưa khách<br>(Thanh toán)</button><div id="hint">Chạm LY trên thớt để bắt đầu pha.</div><div id="toast"></div>
+<button id="serveBtn"><span style="font-size:16px;vertical-align:middle">🥤</span><br>Đưa khách<br>(Thanh toán)</button><div id="hint">Chạm vào chồng LY bên trái để lấy ly.</div><div id="toast"></div>
 <section id="phone"><div id="phoneHead"><span>📱 Điện thoại</span><button id="closePhone">×</button></div>
 <div id="apps"><button class="app" data-panel="call"><span>📞</span>Gọi</button><button class="app" data-panel="messages"><span>💬</span>Tin nhắn</button><button class="app" data-panel="stock"><span>📦</span>Kho</button></div>
 <div id="phoneBody"><div class="panel" id="panel-call"><h3>Gọi nhà cung cấp</h3><div id="supplier"></div></div>
@@ -166,8 +175,8 @@ function setRecipe(){
  $("#recipeBubble").style.display="block";
 }
 function updateReady(){const ok=!!(cup.product && queue[0] && cup.product===queue[0][3]);$("#game").classList.toggle("ready",ok);$("#serveBtn").setAttribute("aria-disabled",ok?"false":"true");return ok}
-function placeCup(){cup={active:true,items:[],product:null};updateReady();$("#drink").style.display="block";$("#drinkLiquid").style.height="0";$("#drinkLabel").textContent="LY";$("#game").classList.remove("ready");$("#hint").textContent="Ly đã lên thớt — chạm nguyên liệu trực tiếp."}
-function add(id){if(!cup.active){toast("Chạm LY trên thớt trước.");return}if(id==="tea"){toast("Chọn trà ô long hoặc trà vải.");return}if(cup.items.includes(id)){toast("Nguyên liệu này đã có.");return}if(stock[id]<=0){toast("Hết nguyên liệu — nhập hàng bằng điện thoại.");return}stock[id]--;cup.items.push(id);$("#drinkLiquid").style.height=Math.min(82,14+cup.items.length*12)+"%";$("#drinkLiquid").style.background=colors[id]||"#8b5a32";$("#drinkLabel").textContent=names[id];const hit=Object.entries(recipes).find(([_,r])=>r.need.length===cup.items.length&&r.need.every(x=>cup.items.includes(x)));if(hit){cup.product=hit[0];$("#drinkLabel").textContent=hit[0];updateReady();$("#hint").textContent="Đúng món — bấm Đưa khách • Thanh toán.";toast("Pha xong "+hit[0])}}
+function placeCup(){cup={active:true,items:[],product:null};updateReady();$("#drink").style.display="block";$("#drinkLiquid").style.height="0";$("#drinkLabel").textContent="LY";$("#game").classList.remove("ready");$("#hint").textContent="Đã lấy ly — ly đặt trên thớt. Chạm nguyên liệu để pha."}
+function add(id){if(!cup.active){toast("Hãy chạm vào chồng LY ở góc trái để lấy ly.");return}if(id==="tea"){toast("Chọn trà ô long hoặc trà vải.");return}if(cup.items.includes(id)){toast("Nguyên liệu này đã có.");return}if(stock[id]<=0){toast("Hết nguyên liệu — nhập hàng bằng điện thoại.");return}stock[id]--;cup.items.push(id);$("#drinkLiquid").style.height=Math.min(82,14+cup.items.length*12)+"%";$("#drinkLiquid").style.background=colors[id]||"#8b5a32";$("#drinkLabel").textContent=names[id];const hit=Object.entries(recipes).find(([_,r])=>r.need.length===cup.items.length&&r.need.every(x=>cup.items.includes(x)));if(hit){cup.product=hit[0];$("#drinkLabel").textContent=hit[0];updateReady();$("#hint").textContent="Đúng món — bấm Đưa khách • Thanh toán.";toast("Pha xong "+hit[0])}}
 function trash(){if(!cup.active){toast("Thớt đang trống.");return}cup={active:false,items:[],product:null};$("#drink").style.display="none";updateReady();$("#hint").textContent="Đã bỏ ly — chạm LY để pha lại.";toast("Đã bỏ ly")}
 function serve(){
  if(!queue[0]){toast("Chưa có khách.");return}
