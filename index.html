@@ -89,24 +89,58 @@ function money(n){return n.toLocaleString('vi-VN')+'đ'}
 function toast(t){const e=document.querySelector('#toast');e.textContent=t;e.style.display='block';clearTimeout(window.__t);window.__t=setTimeout(()=>e.style.display='none',900)}
 function makeCustomers(count=5){customers=[];for(let i=0;i<count;i++){customers.push({img:i,order:orders[(i+Math.floor(Math.random()*3))%orders.length],patience:100,complaint:false})};renderCustomers();}
 const complaints=['Ơ, em làm sai món rồi!','Anh/chị gọi món khác mà 😅','Sai công thức rồi em ơi!','Ủa, món này đâu phải món anh gọi 😭','Làm lại giúp anh/chị nhé!'];
-function complainFirst(){const d=document.querySelector('#customers .customer');if(!d)return;const b=d.querySelector('.bubble');if(!b)return;const c=customers[0];c.complaint=true;c.patience=Math.max(0,c.patience-8);b.innerHTML='<span class="drink">😑</span>'+complaints[Math.floor(Math.random()*complaints.length)];const bar=d.querySelector('.mood span');if(bar)bar.style.width=c.patience+'%';toast('Khách không hài lòng.');}
-function updatePatience(){customers.forEach((c,i)=>{c.patience=Math.max(0,c.patience-0.45);const d=document.querySelector('#customers .c'+i);if(!d)return;const bar=d.querySelector('.mood span');if(bar){bar.style.width=c.patience+'%';const hue=c.patience<30?'#e34b3f':c.patience<55?'#f0bd3c':'#54c947';bar.style.background=hue;}if(i===0 && c.patience<=0 && !c.complaint){complainFirst();}});}
+function complainFirst(){
+  const d=document.querySelector('#customers .c0');
+  if(!d || !customers[0]) return;
+  const c=customers[0];
+  c.complaint=true;
+  const b=d.querySelector('.bubble');
+  if(b) b.innerHTML='<span class="drink">😑</span>'+complaints[Math.floor(Math.random()*complaints.length)];
+  const bar=d.querySelector('.mood span');
+  if(bar) bar.style.width='0%';
+  toast('Khách không hài lòng.');
+}
+function customerLeaves(reason='patience'){
+  if(!customers.length) return;
+  const leaving=customers[0];
+  customers.shift();
+  resetCup();
+  renderCustomers();
+  if(reason==='patience') toast('Khách bỏ đi vì hết kiên nhẫn.');
+  if(customers.length===0){
+    setTimeout(()=>makeCustomers(Math.floor(Math.random()*5)+1),900);
+  }
+}
+function updatePatience(){
+  // Chỉ khách đang được phục vụ tụt nhanh; khách phía sau vẫn chờ nhẹ để không gây cảm giác mất kiểm soát.
+  customers.forEach((c,i)=>{
+    const rate=i===0?0.8:0.15;
+    c.patience=Math.max(0,c.patience-rate);
+    const d=document.querySelector('#customers .c'+i);
+    if(!d)return;
+    const bar=d.querySelector('.mood span');
+    if(bar){
+      bar.style.width=c.patience+'%';
+      const hue=c.patience<30?'#e34b3f':c.patience<55?'#f0bd3c':'#54c947';
+      bar.style.background=hue;
+    }
+  });
+  if(customers[0] && customers[0].patience<=0){
+    complainFirst();
+    setTimeout(()=>customerLeaves('patience'),450);
+  }
+}
 setInterval(updatePatience,1000);
 function renderCustomers(){const root=document.querySelector('#customers');root.innerHTML='';customers.forEach((c,i)=>{const d=document.createElement('div');d.className='customer c'+i;d.innerHTML=`<div class="bubble"><span class="drink">${c.order.icon}</span>${c.order.name}<br><small>Nhé ~</small></div><img src="${NPCS['n'+c.img]}"><div class="mood"><span style="width:${c.patience}%"></span></div>`;root.appendChild(d)});current=customers[0]?.order||null;updateFormula();}
+function canonicalIngredients(list){
+  return [...list].map(String).sort().join('|');
+}
 function sameIngredientMultiset(a,b){
-  if(a.length!==b.length) return false;
-  const counts=new Map();
-  for(const id of a) counts.set(id,(counts.get(id)||0)+1);
-  for(const id of b){
-    const n=counts.get(id)||0;
-    if(n===0) return false;
-    if(n===1) counts.delete(id); else counts.set(id,n-1);
-  }
-  return counts.size===0;
+  return a.length===b.length && canonicalIngredients(a)===canonicalIngredients(b);
 }
 function recipeMatches(){
   if(!current) return false;
-  return sameIngredientMultiset(items,current.need);
+  return canonicalIngredients(items)===canonicalIngredients(current.need);
 }
 const ingredientIcons={coffee:'☕',sugar:'◻️',ice:'🧊',condensed:'🥛',fresh:'🥛',milkTea:'🧋',oolong:'🍵',matcha:'🍵',lycheeTea:'🍹',orange:'🍊',pineapple:'🍍',lemon:'🍋',boba:'⚫',coconut:'⬜',fruitJelly:'🟣'};
 function updateFormula(){
@@ -159,7 +193,11 @@ function serve(){
 }
 
 document.querySelector('#cupHit').onclick=placeCup;
-['coffee','tea','oolong','milkTea','matcha','lycheeTea','condensed','fresh','sugar','orange','pineapple','lemon','ice','boba','coconut','fruitJelly'].forEach(id=>document.querySelector('#'+id).onclick=()=>id==='tea'?toast('Chọn loại trà cụ thể.'):addItem(id));
+['coffee','tea','oolong','milkTea','matcha','lycheeTea','condensed','fresh','sugar','orange','pineapple','lemon','ice','boba','coconut','fruitJelly'].forEach(id=>{
+  const el=document.querySelector('#'+id);
+  if(!el) return;
+  el.addEventListener('pointerup',e=>{e.preventDefault(); id==='tea'?toast('Chọn loại trà cụ thể.'):addItem(id);},{passive:false});
+});
 document.querySelector('#pay').onclick=serve;document.querySelector('#reset').onclick=()=>{resetCup();toast('Đã làm lại.')};
 document.querySelector('#phone').onclick=()=>document.querySelector('#phoneModal').style.display='block';document.querySelector('#closePhone').onclick=()=>document.querySelector('#phoneModal').style.display='none';
 ['shop','upgrade','ledger','closeShop'].forEach(id=>document.querySelector('#'+id).onclick=()=>toast('Tính năng đang mở trong bản tiếp theo.'));
